@@ -36,7 +36,7 @@ R version ≥4.0.2 and the following packages: `data.table`, `progressr`, and `t
 
 1. `ipw_setup.R`
 
-    **Description:** Setup and cleanup functions for the input person-time datasets for ipw_run.R. The most important exported function is `ipw_setup()`, which runs the entire setup process.
+    **Description:** Setup and cleanup functions for the input person-time datasets for `ipw_run.R`. The most important exported function is `ipw_setup()`, which runs the entire setup process.
 
 2. `ipw_boot.R`
 
