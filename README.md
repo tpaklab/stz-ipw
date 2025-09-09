@@ -15,14 +15,14 @@ R version ≥4.0.2 and the following packages: `data.table`, `progressr`, and `t
     **Description:** The primary script that runs the IPW analysis, including loading of the input person-time dataset, data cleanup, generation of point estimates, bootstrapping, generating summary tables, and saving output files. This script can be invoked directly and expects 2 to 4 command line arguments:
 
     ```
-    $ `ipw_run.R` MODEL_NAME INPUT_FILE [NUM_WORKERS] [NUM_BOOTSTRAPS]
+    $ ./ipw_run.R MODEL_NAME INPUT_FILE [NUM_WORKERS] [NUM_BOOTSTRAPS]
     ```
 
     `MODEL_NAME` specifies the variables included in the pooled over time logistic regression model. Possible values include `none`, `baseline_HCA`, and `max_HCA` (the fully adjusted model including time-varying covariates).
 
     **Input files:**
 
-    - `$INPUT_FILE.{rds|csv}`  <- the input person-time dataset
+    - `$INPUT_FILE`  <- the input person-time dataset, in either CSV or RDS format
     
     **Output files:**
 

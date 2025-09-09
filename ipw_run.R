@@ -7,7 +7,7 @@
 #   ipw_boot.R
 #
 # INPUT FILES
-#   $INPUT_FILE.{rds|csv}  <- the input person-time dataset
+#   $INPUT_FILE  <- the input person-time dataset, in either CSV or RDS format
 #
 # OUTPUT FILES
 #   $INPUT_FILE.after_setup.rds  <- a cache of the dataset after cleanup/setup procedures
