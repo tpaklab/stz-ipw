@@ -323,7 +323,7 @@ ipw_est <- function(dt, Kint, cutTimes, compareTimes, adj = "max", intSize = 0.5
         
         # Calculate weights
         dt[, (weights_col) := int_weights(dt, compare_lower, compare_upper)]
-        # Save debug info on the crude and stabilized weights
+        # Save debug info on the crude and corrected weights
         if (!is.null(out_debug)) { debug_weights(dt, weights_col, out_debug) }
         # Clamp weight columns at the 99th percentile
         cut99 <- quantile(dt[[weights_col]], probs = c(.99))
