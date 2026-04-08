@@ -161,6 +161,31 @@ int_weights <- function(dt, markl, marku, id_col = "id") {
     return(dt.stabwts$stabwts)
 }
 
+# Debug function for saving the mean corrected weights after each comparison of time intervals.
+# This corresponds to the "corrected weight check" part of Jessica's original scripts.
+# This is a diagnostic for misspecification of the propensity score model. In a correctly
+# specified model, the mean of the weights is expected to be close to 1.
+debug_weights <- function(dt, weights_col, out_debug) {
+    cat_append(paste0("\n\n#### DEBUG WEIGHTS - ", weights_col, " ####\n"), out_debug)
+    cat_append(summary(dt[[weights_col]]), out_debug)
+
+    # corrected weight check
+    dt.temp <- dt[order(t0), ]
+    dt.temp[, ind := (D + Y) * get(weights_col)]
+    dt.temp[, deadweights := cumsum(ind)]
+
+    Yk <- dt[t0 < K, sum(Y)] #number with Y=1 by t0=K
+    Dk <- dt[t0 < K, sum(D)] #number with D=1 by t0=K
+    nfailk <- Yk + Dk
+
+    num <- dt[t0 == K, sum(get(weights_col))] + dt.temp[t0 < K, last(deadweights)]
+    den <- dt[t0 == K, .N] + nfailk
+
+    # Print the mean of the corrected weights
+    cat_append(paste0("\nCorrected mean: ", num, " / ", den, " = ", num/den, "\n"), out_debug)
+}
+
+
 # Fit a logistic regression model that is used to generate the IPW weights
 ipw_glm_denom_prob <- function(dt, Kint, adj = "max") {
     form <- if (adj == "max") {
@@ -298,7 +323,8 @@ ipw_est <- function(dt, Kint, cutTimes, compareTimes, adj = "max", intSize = 0.5
         
         # Calculate weights
         dt[, (weights_col) := int_weights(dt, compare_lower, compare_upper)]
-        if (!is.null(out_debug)) { cat_append(summary(dt[[weights_col]]), out_debug) }
+        # Save debug info on the crude and stabilized weights
+        if (!is.null(out_debug)) { debug_weights(dt, weights_col, out_debug) }
         # Clamp weight columns at the 99th percentile
         cut99 <- quantile(dt[[weights_col]], probs = c(.99))
         dt[dt[[weights_col]] > cut99, (weights_col) := cut99]
