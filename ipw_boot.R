@@ -165,7 +165,7 @@ int_weights <- function(dt, markl, marku, id_col = "id") {
 # This corresponds to the "corrected weight check" part of Jessica's original scripts.
 # This is a diagnostic for misspecification of the propensity score model. In a correctly
 # specified model, the mean of the weights is expected to be close to 1.
-debug_weights <- function(dt, weights_col, out_debug) {
+debug_weights <- function(dt, weights_col, Kint, out_debug) {
     cat_append(paste0("\n\n#### DEBUG WEIGHTS - ", weights_col, " ####\n"), out_debug)
     cat_append(summary(dt[[weights_col]]), out_debug)
 
@@ -174,12 +174,12 @@ debug_weights <- function(dt, weights_col, out_debug) {
     dt.temp[, ind := (D + Y) * get(weights_col)]
     dt.temp[, deadweights := cumsum(ind)]
 
-    Yk <- dt[t0 < K, sum(Y)] #number with Y=1 by t0=K
-    Dk <- dt[t0 < K, sum(D)] #number with D=1 by t0=K
+    Yk <- dt[t0 < Kint, sum(Y)] #number with Y=1 by t0=Kint
+    Dk <- dt[t0 < Kint, sum(D)] #number with D=1 by t0=Kint
     nfailk <- Yk + Dk
 
-    num <- dt[t0 == K, sum(get(weights_col))] + dt.temp[t0 < K, last(deadweights)]
-    den <- dt[t0 == K, .N] + nfailk
+    num <- dt[t0 == Kint, sum(get(weights_col))] + dt.temp[t0 < Kint, last(deadweights)]
+    den <- dt[t0 == Kint, .N] + nfailk
 
     # Print the mean of the corrected weights
     cat_append(paste0("\nCorrected mean: ", num, " / ", den, " = ", num/den, "\n"), out_debug)
@@ -324,7 +324,7 @@ ipw_est <- function(dt, Kint, cutTimes, compareTimes, adj = "max", intSize = 0.5
         # Calculate weights
         dt[, (weights_col) := int_weights(dt, compare_lower, compare_upper)]
         # Save debug info on the crude and corrected weights
-        if (!is.null(out_debug)) { debug_weights(dt, weights_col, out_debug) }
+        if (!is.null(out_debug)) { debug_weights(dt, weights_col, Kint, out_debug) }
         # Clamp weight columns at the 99th percentile
         cut99 <- quantile(dt[[weights_col]], probs = c(.99))
         dt[dt[[weights_col]] > cut99, (weights_col) := cut99]
