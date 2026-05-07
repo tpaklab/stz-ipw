@@ -362,7 +362,7 @@ ipw_boot_resamp <- function(dt, Kint, cutTimes, compareTimes, adj = "max", id_co
     ids <- unique(dt[[id_col]])
     ids_star <- sample(ids, replace = TRUE)
 
-    dt.samp_ids <- data.table(samp_id = seq_along(length(ids)))
+    dt.samp_ids <- data.table(samp_id = seq_along(ids))
     dt.samp_ids[, (id_col) := ids_star]
     setkeyv(dt.samp_ids, id_col)
 
